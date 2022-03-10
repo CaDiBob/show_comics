@@ -8,8 +8,6 @@ def comics_atribute(url):
     response = requests.get(url)
     response.raise_for_status()
     comics_atribute = response.json()
-    # return comics_atribute
-
     return {
         'title': comics_atribute['safe_title'],
         'img_url': comics_atribute['img'],
@@ -29,9 +27,8 @@ def download_image(url, title, params=None):
 def main():
     env = Env()
     env.read_env('.env')
+    vk_app_id = env('VK_APP_ID')
     url = 'https://xkcd.com/353/info.0.json'
-    # print(comics_atribute(url))
-    # exit()
     atribute = comics_atribute(url)
     img_url = atribute['img_url']
     title = atribute['title']
