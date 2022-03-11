@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ### Как запустить
 
 ```bash
-python manage.py
+python main.py
 ```
 
 ### Цель проекта
