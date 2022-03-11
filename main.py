@@ -3,7 +3,6 @@ import random
 import requests
 
 from environs import Env
-from pprint import pprint
 
 
 def postin_img_to_vk(answer, vk_group_id, vk_access_token, comment):
@@ -108,6 +107,8 @@ def main():
     answer = save_img['response']
 
     print(postin_img_to_vk(answer, vk_group_id, vk_access_token, comment))
+    os.remove(os.path.join(folder, f'{title}.png'))
+
 
 if __name__ == '__main__':
     main()
