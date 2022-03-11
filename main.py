@@ -5,7 +5,7 @@ import requests
 from environs import Env
 
 
-def postin_img_to_vk(answer, vk_group_id, vk_access_token, comment):
+def posting_img_to_vk(answer, vk_group_id, vk_access_token, comment):
     for param in answer['response']:
         media_id = param['id']
         img_owner_id = param['owner_id']
@@ -108,7 +108,7 @@ def main():
         result_upload, vk_group_id, vk_access_token
     )
 
-    postin_img_to_vk(
+    posting_img_to_vk(
         save_wall_img, vk_group_id, vk_access_token, comment
     )
 
