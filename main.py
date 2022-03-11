@@ -2,6 +2,40 @@ import os
 import requests
 
 from environs import Env
+from pprint import pprint
+
+
+def postin_img_to_vk(answer, vk_group_id, vk_access_token, comment):
+    for a in answer:
+        media_id = a['id']
+        img_owner_id = a['owner_id']
+    attachment = f'photo{img_owner_id}_{media_id}'
+    url = 'https://api.vk.com/method/wall.post'
+    params = {
+        'access_token': vk_access_token,
+        'owner_id': -int(vk_group_id,),
+        'message': comment,
+        'attachments': attachment,
+        'v': 5.131,
+    }
+    response = requests.post(url, params=params)
+    response.raise_for_status()
+
+    return response.json()
+
+
+def save_img_to_vk(answer, vk_group_id, vk_access_token):
+    url = 'https://api.vk.com/method/photos.saveWallPhoto'
+    params = {
+        'access_token': vk_access_token,
+        'photo': answer['photo'],
+        'server': answer['server'],
+        'hash': answer['hash'],
+        'v': 5.131,
+    }
+    response = requests.post(url, params=params)
+    response.raise_for_status()
+    return response.json()
 
 
 def send_img_to_vk(upload_url, folder, title):
@@ -15,13 +49,13 @@ def send_img_to_vk(upload_url, folder, title):
     return response.json()
 
 
-
 def fetch_upload_url(answer):
     return answer['response']['upload_url']
 
 
-def get_group_vk_numbers(vk_url, params):
-    response = requests.get(vk_url, params=params)
+def get_group_vk_numbers(params):
+    url = 'https://api.vk.com/method/photos.getWallUploadServer'
+    response = requests.get(url, params=params)
     response.raise_for_status
     return response.json()
 
@@ -57,17 +91,20 @@ def main():
     atribute = comics_atribute(url)
     img_url = atribute['img_url']
     title = atribute['title']
+    comment = atribute['comment']
     # download_image(img_url, title, folder)
-    # print(atribute['comment'])
 
-    vk_url = 'https://api.vk.com/method/photos.getWallUploadServer'
     params = {
-        "group_id": vk_app_id,
         "access_token": vk_access_token,
         "v": 5.131,
     }
-    upload_url = fetch_upload_url(get_group_vk_numbers(vk_url, params))
-    print(send_img_to_vk(upload_url, folder, title))
+    upload_url = fetch_upload_url(get_group_vk_numbers(params))
+    result_send = send_img_to_vk(upload_url, folder, title)
+
+    save_img = save_img_to_vk(result_send, vk_group_id, vk_access_token)
+    answer = save_img['response']
+
+    print(postin_img_to_vk(answer, vk_group_id, vk_access_token, comment))
 
 if __name__ == '__main__':
     main()
