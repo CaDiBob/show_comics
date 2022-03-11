@@ -1,4 +1,5 @@
 import os
+import random
 import requests
 
 from environs import Env
@@ -38,8 +39,8 @@ def save_img_to_vk(answer, vk_group_id, vk_access_token):
     return response.json()
 
 
-def send_img_to_vk(upload_url, folder, title):
-    with open(f'{title}.png', 'rb') as file:
+def send_img_to_vk(upload_url, title, folder='comics'):
+    with open(os.path.join(folder, f'{title}.png'), 'rb') as file:
         url = upload_url
         files = {
             'file1': file,    
@@ -87,19 +88,21 @@ def main():
     vk_access_token = env('VK_ACCESS_TOKEN')
     folder = 'comics'
 
-    url = 'https://xkcd.com/353/info.0.json'
+    random_comics = random.randint(1,2591)
+    url = f'https://xkcd.com/{random_comics}/info.0.json'
     atribute = comics_atribute(url)
     img_url = atribute['img_url']
     title = atribute['title']
     comment = atribute['comment']
-    # download_image(img_url, title, folder)
+    download_image(img_url, title, folder)
+    print(comment)
 
     params = {
         "access_token": vk_access_token,
         "v": 5.131,
     }
     upload_url = fetch_upload_url(get_group_vk_numbers(params))
-    result_send = send_img_to_vk(upload_url, folder, title)
+    result_send = send_img_to_vk(upload_url, title, folder='comics')
 
     save_img = save_img_to_vk(result_send, vk_group_id, vk_access_token)
     answer = save_img['response']
