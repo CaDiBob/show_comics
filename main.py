@@ -37,8 +37,8 @@ def save_img_to_server(answer, vk_group_id, vk_access_token):
     return response.json()
 
 
-def get_result_upload(upload_url, title, folder):
-    with open(os.path.join(folder, f'{title}.png'), 'rb') as file:
+def get_result_upload(upload_url, title):
+    with open(f'{title}.png', 'rb') as file:
         url = upload_url
         files = {
             'file1': file,
@@ -59,11 +59,10 @@ def get_upload_parameters(params):
     return response.json()
 
 
-def download_image(url, title, folder):
-    os.makedirs(folder, exist_ok=True)
+def download_image(url, title):
     response = requests.get(url)
     response.raise_for_status()
-    with open(os.path.join(folder, f'{title}.png'), 'wb') as file:
+    with open(f'{title}.png', 'wb') as file:
         file.write(response.content)
 
 
@@ -84,7 +83,6 @@ def main():
     vk_app_id = env('VK_APP_ID')
     vk_group_id = env('VK_GROUP_ID')
     vk_access_token = env('VK_ACCESS_TOKEN')
-    folder = 'comics'
 
     random_comics = random.randint(1, 2591)
     url = f'https://xkcd.com/{random_comics}/info.0.json'
@@ -92,7 +90,7 @@ def main():
     img_url = comics_info['img_url']
     title = comics_info['title']
     comment = comics_info['comment']
-    download_image(img_url, title, folder)
+    download_image(img_url, title)
 
     params = {
         "access_token": vk_access_token,
@@ -100,9 +98,7 @@ def main():
     }
 
     upload_url = fetch_upload_url(get_upload_parameters(params))
-    result_upload = get_result_upload(
-        upload_url, title, folder
-    )
+    result_upload = get_result_upload(upload_url, title)
 
     save_wall_img = save_img_to_server(
         result_upload, vk_group_id, vk_access_token
@@ -112,7 +108,7 @@ def main():
         save_wall_img, vk_group_id, vk_access_token, comment
     )
 
-    os.remove(os.path.join(folder, f'{title}.png'))
+    os.remove(f'{title}.png')
 
 
 if __name__ == '__main__':
