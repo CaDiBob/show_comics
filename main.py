@@ -51,6 +51,7 @@ def get_upload_result(upload_url, title):
             'file1': file,
         }
         response = requests.post(url, files=files)
+        check_error(response)
         response.raise_for_status()
     return response.json()
 
