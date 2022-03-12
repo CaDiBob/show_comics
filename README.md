@@ -8,9 +8,9 @@
 
 Все чувствительные данные прячем в `.env` файл.
 
-`VK_GROUP_ID`=id вашей группы в ВК можно узнать [здесь](https://regvk.com/id/),
+`VK_GROUP_ID`=id вашей группы в ВК можно узнать [здесь](https://regvk.com/id/).
 
-`VK_APP_ID`=client_id вашего приложения можно узнать на [странице вашего приложения в разделе настроек](https://vk.com/apps?act=manage),
+`VK_APP_ID`=client_id вашего приложения можно узнать на [странице вашего приложения в разделе настроек](https://vk.com/apps?act=manage).
 
 `VK_ACCESS_TOKEN`= ваш ключ к [API ВКонтакте](https://vk.com/dev/implicit_flow_user).
 
