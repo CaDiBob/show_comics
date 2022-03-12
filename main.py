@@ -75,7 +75,8 @@ def download_image(url, title):
         file.write(response.content)
 
 
-def get_comics_info(url):
+def get_comics_info(random_comics_number):
+    url = f'https://xkcd.com/{random_comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
     comics_atribute = response.json()
@@ -105,8 +106,7 @@ def main():
     try:
         last_comics_numder = get_last_comics_numder()
         random_comics_number = random.randint(1, last_comics_numder)
-        url = f'https://xkcd.com/{random_comics_number}/info.0.json'
-        comics_info = get_comics_info(url)
+        comics_info = get_comics_info(random_comics_number)
         img_url = comics_info['img_url']
         title = comics_info['title']
         comment = comics_info['comment']
