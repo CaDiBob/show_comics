@@ -92,29 +92,30 @@ def main():
     vk_group_id = env('VK_GROUP_ID')
     vk_access_token = env('VK_ACCESS_TOKEN')
 
-
-    last_comics_numder = get_last_comics_numder()
-    random_comics_number = random.randint(1, last_comics_numder)
-    url = f'https://xkcd.com/{random_comics_number}/info.0.json'
-    comics_info = get_comics_info(url)
-    img_url = comics_info['img_url']
-    title = comics_info['title']
-    comment = comics_info['comment']
-    download_image(img_url, title)    
-    upload_parameters = get_upload_parameters(vk_access_token)
-    upload_url = upload_parameters['response']['upload_url']
-    result_upload = get_upload_result(upload_url, title)    
-    save_wall_img = save_img_to_server(
-        result_upload, vk_group_id, vk_access_token
-    )    
-    answer = save_wall_img['response']
-    for param in answer:
-        media_id = param['id']
-        img_owner_id = param['owner_id']
-    publish_img_to_vk(
-        media_id, img_owner_id, vk_group_id, vk_access_token, comment
-    )
-    os.remove(f'{title}.png')
+    try:
+        last_comics_numder = get_last_comics_numder()
+        random_comics_number = random.randint(1, last_comics_numder)
+        url = f'https://xkcd.com/{random_comics_number}/info.0.json'
+        comics_info = get_comics_info(url)
+        img_url = comics_info['img_url']
+        title = comics_info['title']
+        comment = comics_info['comment']
+        download_image(img_url, title)    
+        upload_parameters = get_upload_parameters(vk_access_token)
+        upload_url = upload_parameters['response']['upload_url']
+        result_upload = get_upload_result(upload_url, title)    
+        save_wall_img = save_img_to_server(
+            result_upload, vk_group_id, vk_access_token
+        )    
+        answer = save_wall_img['response']
+        for param in answer:
+            media_id = param['id']
+            img_owner_id = param['owner_id']
+        publish_img_to_vk(
+            media_id, img_owner_id, vk_group_id, vk_access_token, comment
+        )
+    finally:
+        os.remove(f'{title}.png')
 
 
 if __name__ == '__main__':
