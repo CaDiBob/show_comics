@@ -5,6 +5,13 @@ import requests
 from environs import Env
 
 
+def check_error(response):
+    if 'error' in response.json():
+        error = response.json()['error']['error_code']
+        error_msg = response.json()['error']['error_msg']
+        raise requests.HTTPError(error, error_msg)
+
+
 def publish_img_to_vk(
     media_id, img_owner_id, vk_group_id, vk_access_token, comment
     ):
@@ -12,12 +19,13 @@ def publish_img_to_vk(
     url = 'https://api.vk.com/method/wall.post'
     params = {
         'access_token': vk_access_token,
-        'owner_id': -int(vk_group_id,),
+        'owner_id': -int(vk_group_id),
         'message': comment,
         'attachments': attachment,
         'v': 5.131,  # версия API ВКонтакте используется во всех запросах,
     }
     response = requests.post(url, params=params)
+    check_error(response)
     response.raise_for_status()
     return response.json()
 
@@ -32,6 +40,7 @@ def save_img_to_server(answer, vk_group_id, vk_access_token):
         'v': 5.131,
     }
     response = requests.post(url, params=params)
+    check_error(response)
     response.raise_for_status()
     return response.json()
 
@@ -50,10 +59,11 @@ def get_upload_result(upload_url, title):
 def get_upload_parameters(vk_access_token):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     params = {
-        "access_token": vk_access_token,
-        "v": 5.131,
+        'access_token': vk_access_token,
+        'v': 5.131,
     }
     response = requests.get(url, params=params)
+    check_error(response)
     response.raise_for_status
     return response.json()
 
@@ -103,10 +113,10 @@ def main():
         download_image(img_url, title)    
         upload_parameters = get_upload_parameters(vk_access_token)
         upload_url = upload_parameters['response']['upload_url']
-        result_upload = get_upload_result(upload_url, title)    
+        result_upload = get_upload_result(upload_url, title)
         save_wall_img = save_img_to_server(
             result_upload, vk_group_id, vk_access_token
-        )    
+        )
         answer = save_wall_img['response']
         for param in answer:
             media_id = param['id']
@@ -114,6 +124,8 @@ def main():
         publish_img_to_vk(
             media_id, img_owner_id, vk_group_id, vk_access_token, comment
         )
+    except requests.HTTPError as error:
+        print(f'Произошла ошибка {error}')
     finally:
         os.remove(f'{title}.png')
 
