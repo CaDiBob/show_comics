@@ -13,8 +13,7 @@ def check_error(response):
 
 
 def publish_img_to_vk(
-    media_id, img_owner_id, vk_group_id, vk_access_token, comment
-    ):
+        media_id, img_owner_id, vk_group_id, vk_access_token, comment):
     attachment = f'photo{img_owner_id}_{media_id}'
     url = 'https://api.vk.com/method/wall.post'
     params = {
@@ -88,11 +87,11 @@ def get_comics_info(url):
 
 def get_last_comics_numder():
     url = 'https://xkcd.com/info.0.json'
-    response =  requests.get(url)
+    response = requests.get(url)
     response.raise_for_status()
     comics_info = response.json()
-    last_comics_numder = comics_info['num'] 
-    return last_comics_numder     
+    last_comics_numder = comics_info['num']
+    return last_comics_numder
 
 
 def main():
@@ -110,7 +109,7 @@ def main():
         img_url = comics_info['img_url']
         title = comics_info['title']
         comment = comics_info['comment']
-        download_image(img_url, title)    
+        download_image(img_url, title)
         upload_parameters = get_upload_parameters(vk_access_token)
         upload_url = upload_parameters['response']['upload_url']
         result_upload = get_upload_result(upload_url, title)
