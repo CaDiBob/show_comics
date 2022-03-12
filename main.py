@@ -64,7 +64,7 @@ def get_upload_parameters(vk_access_token):
     }
     response = requests.get(url, params=params)
     check_error(response)
-    response.raise_for_status
+    response.raise_for_status()
     return response.json()
 
 
@@ -114,6 +114,7 @@ def main():
         upload_parameters = get_upload_parameters(vk_access_token)
         upload_url = upload_parameters['response']['upload_url']
         result_upload = get_upload_result(upload_url, title)
+        
         save_wall_img = save_img_to_server(
             result_upload, vk_group_id, vk_access_token
         )
