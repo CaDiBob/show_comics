@@ -5,10 +5,9 @@ import requests
 from environs import Env
 
 
-def posting_img_to_vk(answer, vk_group_id, vk_access_token, comment):
-    for param in answer['response']:
-        media_id = param['id']
-        img_owner_id = param['owner_id']
+def publish_img_to_vk(
+    media_id, img_owner_id, vk_group_id, vk_access_token, comment
+    ):
     attachment = f'photo{img_owner_id}_{media_id}'
     url = 'https://api.vk.com/method/wall.post'
     params = {
@@ -16,7 +15,7 @@ def posting_img_to_vk(answer, vk_group_id, vk_access_token, comment):
         'owner_id': -int(vk_group_id,),
         'message': comment,
         'attachments': attachment,
-        'v': 5.131,
+        'v': 5.131,  # версия API ВКонтакте используется во всех запросах,
     }
     response = requests.post(url, params=params)
     response.raise_for_status()
@@ -37,7 +36,7 @@ def save_img_to_server(answer, vk_group_id, vk_access_token):
     return response.json()
 
 
-def get_result_upload(upload_url, title):
+def get_upload_result(upload_url, title):
     with open(f'{title}.png', 'rb') as file:
         url = upload_url
         files = {
@@ -48,12 +47,12 @@ def get_result_upload(upload_url, title):
     return response.json()
 
 
-def fetch_upload_url(answer):
-    return answer['response']['upload_url']
-
-
-def get_upload_parameters(params):
+def get_upload_parameters(vk_access_token):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
+    params = {
+        "access_token": vk_access_token,
+        "v": 5.131,
+    }
     response = requests.get(url, params=params)
     response.raise_for_status
     return response.json()
@@ -92,20 +91,20 @@ def main():
     comment = comics_info['comment']
     download_image(img_url, title)
 
-    params = {
-        "access_token": vk_access_token,
-        "v": 5.131  # версия API ВКонтакте используется во всех запросах,
-    }
-
-    upload_url = fetch_upload_url(get_upload_parameters(params))
-    result_upload = get_result_upload(upload_url, title)
+    upload_parameters = get_upload_parameters(vk_access_token)
+    upload_url = upload_parameters['response']['upload_url']
+    result_upload = get_upload_result(upload_url, title)
 
     save_wall_img = save_img_to_server(
         result_upload, vk_group_id, vk_access_token
     )
 
-    posting_img_to_vk(
-        save_wall_img, vk_group_id, vk_access_token, comment
+    answer = save_wall_img['response']
+    for param in answer:
+        media_id = param['id']
+        img_owner_id = param['owner_id']
+    publish_img_to_vk(
+        media_id, img_owner_id, vk_group_id, vk_access_token, comment
     )
 
     os.remove(f'{title}.png')
