@@ -118,10 +118,9 @@ def main():
         save_wall_img = save_img_to_server(
             result_upload, vk_group_id, vk_access_token
         )
-        answer = save_wall_img['response']
-        for param in answer:
-            media_id = param['id']
-            img_owner_id = param['owner_id']
+        answer = save_wall_img['response'][0]
+        media_id = answer['id']
+        img_owner_id = answer['owner_id']
         publish_img_to_vk(
             media_id, img_owner_id, vk_group_id, vk_access_token, comment
         )
