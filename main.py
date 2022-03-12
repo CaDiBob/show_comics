@@ -5,10 +5,10 @@ import requests
 from environs import Env
 
 
-def check_error(response):
-    if 'error' in response.json():
-        error = response.json()['error']['error_code']
-        error_msg = response.json()['error']['error_msg']
+def check_error(answer):
+    if 'error' in answer:
+        error = answer['error']['error_code']
+        error_msg = answer['error']['error_msg']
         raise requests.HTTPError(error, error_msg)
 
 
@@ -24,9 +24,10 @@ def publish_img_to_vk(
         'v': 5.131,  # версия API ВКонтакте используется во всех запросах,
     }
     response = requests.post(url, params=params)
-    check_error(response)
     response.raise_for_status()
-    return response.json()
+    answer = response.json()
+    check_error(answer)
+    return answer
 
 
 def save_img_to_server(answer, vk_group_id, vk_access_token):
@@ -39,9 +40,10 @@ def save_img_to_server(answer, vk_group_id, vk_access_token):
         'v': 5.131,
     }
     response = requests.post(url, params=params)
-    check_error(response)
     response.raise_for_status()
-    return response.json()
+    answer = response.json()
+    check_error(answer)
+    return answer
 
 
 def get_upload_result(upload_url, title):
@@ -51,9 +53,10 @@ def get_upload_result(upload_url, title):
             'file1': file,
         }
         response = requests.post(url, files=files)
-        check_error(response)
         response.raise_for_status()
-    return response.json()
+    answer = response.json()
+    check_error(answer)
+    return answer
 
 
 def get_upload_parameters(vk_access_token):
@@ -63,9 +66,10 @@ def get_upload_parameters(vk_access_token):
         'v': 5.131,
     }
     response = requests.get(url, params=params)
-    check_error(response)
     response.raise_for_status()
-    return response.json()
+    answer = response.json()
+    check_error(answer)
+    return answer
 
 
 def download_image(url, title):
